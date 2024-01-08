@@ -1,6 +1,6 @@
 PGraphics t_buffer,r_buffer;
 PFont font1;
-PShader grainyShader; 
+PShader testShader; 
 int i = 1;
     
 void setup() {
@@ -17,16 +17,18 @@ void setup() {
   t_buffer.endDraw();
   
   r_buffer = t_buffer;
-  grainyShader = loadShader("Grainy.glsl");
-  grainyShader.set("grainyR",100);
+  //testShader = loadShader("Grainy.glsl");
+  //testShader.set("grainyR",100);
+  testShader = loadShader("Grainy.glsl");
+  
 
 }
 
 void draw() {
   r_buffer = t_buffer;
   i++;
-  grainyShader.set("grainyR",i);
-  r_buffer.filter(grainyShader);
+  //testShader.set("grainyR",i);
+  r_buffer.filter(testShader);
   image(t_buffer,0,0);
   //saveFrame("我爱你-######.jpg");
   //if(frameCount > 90) exit();
