@@ -46,10 +46,15 @@ float random(vec2 st) {
     return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123 + time);
 }
 
+vec3 randomColorOffset(vec3 color) {  //[-0.1, 0.1]
+    vec3 newColor = color + vec3(random(vec2(color.r+color.g,color.g+color.b)) * 0.2 - 0.1,random(vec2(color.r+color.g,color.g+color.b)) * 0.2 - 0.1,random(vec2(color.r+color.g,color.g+color.b)) * 0.2 - 0.1);
+    newColor = clamp(newColor, 0.0, 1.0);
+    return newColor;
+}
+
 void main(void) {
 
   vec4 orig = vec4(texture2D(texture, vertTexCoord.st).rgb,1);    //sampling
-  
   
   int dotCount = 0;
   vec4 grainyLayer = vec4(0.0,0.0,0.0,0.0);
@@ -60,10 +65,10 @@ void main(void) {
         vec2 offsetCoord = vertTexCoord.st + vec2(float(i), float(j)) * texOffset.st;
         if(rgbToHsb(vec4(texture2D(texture, vertTexCoord.st)).rgb).z < brightnessThreshold 
             && rgbToHsb(vec4(texture2D(texture, offsetCoord)).rgb).z > brightnessThreshold
-            && easeInOutSine(random(vertTexCoord.st))>0.5f) //reach the emitting brightness, so receive
+            && random(offsetCoord.st)>easeInOutSine(distance(vec2(float(i),float(j)),vec2(0.0,0.0))/grainyR)) //reach the emitting brightness, so receive
         {
           dotCount++; 
-          grainyLayer += vec4(texture2D(texture, offsetCoord));
+          grainyLayer += vec4(randomColorOffset(texture2D(texture, offsetCoord).rgb),easeInOutSine(distance(vec2(float(i),float(j)),vec2(0.0,0.0))/grainyR)/2);
         }
       }
     }

@@ -20,7 +20,7 @@ void setup() {
   r_buffer = createGraphics(width,height,P2D);
   //testShader = loadShader("Grainy.glsl");
   testShader = loadShader("Grainy2.glsl");
-  testShader.set("grainyR",20);
+  testShader.set("grainyR",12);
   
 }
 
@@ -33,12 +33,18 @@ void draw() {
   
   //i++;
   //testShader.set("grainyR",i);
+  r_buffer.beginDraw();
+  r_buffer.fill(234,128,185);
+  r_buffer.textAlign(CENTER);
+  r_buffer.textFont(font1);
+  r_buffer.text("我爱你", t_buffer.width/2, t_buffer.height/2);
+  r_buffer.endDraw();
   
   image(r_buffer,0,0);
   String txt_fps = String.format(getClass().getName()+ " [fps %6.2f]", frameRate);
   surface.setTitle(txt_fps);
-  //saveFrame("我爱你-######.jpg");
-  //if(frameCount > 10) exit();
+  saveFrame("我爱你-######.jpg");
+  if(frameCount >= 90) exit();
 }
 
 void copyGraphics(PGraphics a, PGraphics b)
