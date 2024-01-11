@@ -19,7 +19,7 @@ void setup() {
   r_buffer = createGraphics(width,height,P2D);
   //testShader = loadShader("Grainy.glsl");
   testShader = loadShader("Grainy2.glsl");
-  testShader.set("grainyR",30);
+  testShader.set("grainyR",50);
   
 }
 
@@ -44,7 +44,7 @@ void draw() {
   image(r_buffer,0,0);
   String txt_fps = String.format(getClass().getName()+ " [fps %6.2f]", frameRate);
   surface.setTitle(txt_fps);
-  saveFrame("我爱你-######.jpg");
+  saveFrame("我爱你-######.png");
   if(frameCount >= 90) exit();
 }
 
