@@ -3,9 +3,8 @@ PFont font1;
 PShader testShader; 
 int i = 1;
 float time;
-    
+
 void setup() {
-  
   size(640, 640, P2D);
   font1 = createFont("喜鹊乌冬面(简+繁体).ttf",128);
   t_buffer = createGraphics(width,height,P2D);
@@ -20,7 +19,7 @@ void setup() {
   r_buffer = createGraphics(width,height,P2D);
   //testShader = loadShader("Grainy.glsl");
   testShader = loadShader("Grainy2.glsl");
-  testShader.set("grainyR",20);
+  testShader.set("grainyR",30);
   
 }
 
@@ -33,12 +32,14 @@ void draw() {
   
   //i++;
   //testShader.set("grainyR",i);
+  /*
   r_buffer.beginDraw();
   r_buffer.fill(234,128,185);
   r_buffer.textAlign(CENTER);
   r_buffer.textFont(font1);
   r_buffer.text("我爱你", t_buffer.width/2, t_buffer.height/2);
   r_buffer.endDraw();
+  */
   
   image(r_buffer,0,0);
   String txt_fps = String.format(getClass().getName()+ " [fps %6.2f]", frameRate);

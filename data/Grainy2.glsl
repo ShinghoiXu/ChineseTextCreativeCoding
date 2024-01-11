@@ -13,9 +13,10 @@ uniform float time;
 varying vec4 vertColor;
 varying vec4 vertTexCoord;
 
-float brightnessThreshold = 0.1f;
-float mixFactor = 0.5f;
-int easeSelector = 1;
+float brightnessLowThreshold = 0.1f;
+float brightnessHighThreshold = 0.5f;
+float mixFactor = 1.0f;
+int easeSelector = 4;
 
 float easeInExpo(float x) {
     if (x == 0.0) {
@@ -33,6 +34,10 @@ float easeOutCirc(float x) {
     return sqrt(1.0 - pow(x - 1.0, 2.0));
 }
 
+float easeOutQuint(float x) {
+    return 1.0 - pow(1.0 - x, 5.0);
+}
+
 float easeFunc(float x){
   if (easeSelector == 1){
     return easeInExpo(x);
@@ -42,6 +47,9 @@ float easeFunc(float x){
   }
   else if (easeSelector == 3){
     return easeOutCirc(x);
+  }
+  else if (easeSelector == 4){
+    return easeOutQuint(x);
   }
 }
 
@@ -77,12 +85,12 @@ void main(void) {
       if (distance(vec2(float(i),float(j)),vec2(0.0,0.0)) <= grainyR){  //traverse all the pixels in the circle around the current pixel
         vec2 offsetCoord = vertTexCoord.st + vec2(float(i), float(j)) * texOffset.st;
         if(random(vertTexCoord.st+offsetCoord.st) > 0.99f
-            && rgbToHsb(vec4(texture2D(texture, vertTexCoord.st)).rgb).z < brightnessThreshold 
-            && rgbToHsb(vec4(texture2D(texture, offsetCoord)).rgb).z > brightnessThreshold
-            && random(offsetCoord.st)<easeFunc(distance(vec2(float(i),float(j)),vec2(0.0,0.0))/grainyR)) //reach the emitting brightness, so receive
+            && rgbToHsb(vec4(texture2D(texture, vertTexCoord.st)).rgb).z < brightnessLowThreshold //threshold for pixels to receive light
+            && rgbToHsb(vec4(texture2D(texture, offsetCoord)).rgb).z > brightnessHighThreshold  //threshold for pixels to emit light
+            && random(offsetCoord.st)>easeFunc(distance(vec2(float(i),float(j)),vec2(0.0,0.0))/grainyR)) //calculate "light" falloff using Monte Carlo algorithm. It calculates decays so the inequality sign is reversed
         {
           dotCount++; 
-          grainyLayer += vec4(randomColorOffset(texture2D(texture, offsetCoord).rgb),easeFunc(distance(vec2(float(i),float(j)),vec2(0.0,0.0))/grainyR)/2);
+          grainyLayer += vec4(randomColorOffset(texture2D(texture, offsetCoord).rgb),0.0001f);
         }
       }
     }
