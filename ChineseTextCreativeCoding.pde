@@ -19,7 +19,11 @@ void setup() {
   r_buffer = createGraphics(width,height,P2D);
   //testShader = loadShader("Grainy.glsl");
   testShader = loadShader("Grainy2.glsl");
-  testShader.set("grainyR",50);
+  testShader.set("grainyR",40);
+  testShader.set("brightnessLowThreshold",0.1f);
+  testShader.set("brightnessHighThreshold",0.8f);
+  testShader.set("easeSelector",4);
+  frameRate(10);
   
 }
 

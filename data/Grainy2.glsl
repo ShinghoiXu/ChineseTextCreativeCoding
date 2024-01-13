@@ -7,16 +7,16 @@ precision mediump int;
 
 uniform sampler2D texture;
 uniform vec2 texOffset;
-uniform int grainyR;
+
 uniform float time;
+uniform int grainyR;
+uniform float brightnessLowThreshold;
+uniform float brightnessHighThreshold;
+uniform int easeSelector;
+float mixFactor = 1.0f;
 
 varying vec4 vertColor;
 varying vec4 vertTexCoord;
-
-float brightnessLowThreshold = 0.1f;
-float brightnessHighThreshold = 0.5f;
-float mixFactor = 1.0f;
-int easeSelector = 4;
 
 float easeInExpo(float x) {
     if (x == 0.0) {
@@ -74,30 +74,32 @@ vec3 randomColorOffset(vec3 color) {  //[-0.1, 0.1]
 }
 
 void main(void) {
-
   vec4 orig = vec4(texture2D(texture, vertTexCoord.st).rgb,1);    //sampling
-  
   int dotCount = 0;
   vec4 grainyLayer = vec4(0.0,0.0,0.0,0.0);
-  
+
   for (int i = -grainyR; i <= grainyR; i++) {
     for (int j = -grainyR; j <= grainyR; j++){
       if (distance(vec2(float(i),float(j)),vec2(0.0,0.0)) <= grainyR){  //traverse all the pixels in the circle around the current pixel
         vec2 offsetCoord = vertTexCoord.st + vec2(float(i), float(j)) * texOffset.st;
-        if(random(vertTexCoord.st+offsetCoord.st) > 0.99f
-            && rgbToHsb(vec4(texture2D(texture, vertTexCoord.st)).rgb).z < brightnessLowThreshold //threshold for pixels to receive light
-            && rgbToHsb(vec4(texture2D(texture, offsetCoord)).rgb).z > brightnessHighThreshold  //threshold for pixels to emit light
-            && random(offsetCoord.st)>easeFunc(distance(vec2(float(i),float(j)),vec2(0.0,0.0))/grainyR)) //calculate "light" falloff using Monte Carlo algorithm. It calculates decays so the inequality sign is reversed
+        vec4 offsetPixel = vec4(texture2D(texture, offsetCoord));
+        if(rgbToHsb(orig.rgb).z < brightnessLowThreshold //threshold for pixels to receive light
+            && rgbToHsb(offsetPixel.rgb).z > brightnessHighThreshold)  //threshold for pixels to emit light     
         {
-          dotCount++; 
-          grainyLayer += vec4(randomColorOffset(texture2D(texture, offsetCoord).rgb),0.0001f);
-        }
+          if (random(vertTexCoord.st+offsetCoord.st) > 0.99f
+            && random(offsetCoord.st) > easeFunc(distance(vec2(float(i),float(j)),vec2(0.0,0.0))/grainyR))
+            //calculate "light" falloff using Monte Carlo algorithm. It calculates decays so the inequality sign is reversed
+            {
+              dotCount++; 
+              grainyLayer += vec4(randomColorOffset(offsetPixel.rgb),1.0f);
+            }
+        }   
       }
     }
   }
   
-  grainyLayer /= dotCount;
+  if (dotCount!=0) grainyLayer /= dotCount;
+    else grainyLayer = orig;
   orig = mix(orig,grainyLayer,mixFactor);
-  
   gl_FragColor = vec4(orig.rgb,1.0) * vertColor;  
 }
