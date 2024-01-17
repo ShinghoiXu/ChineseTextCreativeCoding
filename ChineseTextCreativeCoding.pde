@@ -23,8 +23,7 @@ void setup() {
   testShader.set("brightnessLowThreshold",0.1f);
   testShader.set("brightnessHighThreshold",0.8f);
   testShader.set("easeSelector",4);
-  frameRate(10);
-  
+  //frameRate(10);
 }
 
 void draw() {
@@ -48,8 +47,8 @@ void draw() {
   image(r_buffer,0,0);
   String txt_fps = String.format(getClass().getName()+ " [fps %6.2f]", frameRate);
   surface.setTitle(txt_fps);
-  saveFrame("我爱你-######.png");
-  if(frameCount >= 90) exit();
+  //saveFrame("我爱你-######.png");
+  //if(frameCount >= 90) exit();
 }
 
 void copyGraphics(PGraphics a, PGraphics b)
