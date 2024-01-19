@@ -18,12 +18,8 @@ float mixFactor = 1.0f;
 varying vec4 vertColor;
 varying vec4 vertTexCoord;
 
-float easeInExpo(float x) {
-    if (x == 0.0) {
-        return 0.0;
-    } else {
-        return pow(2.0, 10.0 * x - 10.0);
-    }
+float easeOutExpo(float x) {
+    return x == 1.0 ? 1.0 : 1.0 - pow(2.0, -10.0 * x);
 }
 
 float easeInOutSine(float x) {
@@ -38,9 +34,27 @@ float easeOutQuint(float x) {
     return 1.0 - pow(1.0 - x, 5.0);
 }
 
+float easeOutBounce(float x) {
+    const float n1 = 7.5625;
+    const float d1 = 2.75;
+
+    if (x < 1.0 / d1) {
+        return n1 * x * x;
+    } else if (x < 2.0 / d1) {
+        x -= 1.5 / d1;
+        return n1 * x * x + 0.75;
+    } else if (x < 2.5 / d1) {
+        x -= 2.25 / d1;
+        return n1 * x * x + 0.9375;
+    } else {
+        x -= 2.625 / d1;
+        return n1 * x * x + 0.984375;
+    }
+}
+
 float easeFunc(float x){
   if (easeSelector == 1){
-    return easeInExpo(x);
+    return easeOutExpo(x);
   }
   else if (easeSelector == 2){
     return easeInOutSine(x);
@@ -50,6 +64,9 @@ float easeFunc(float x){
   }
   else if (easeSelector == 4){
     return easeOutQuint(x);
+  }
+  else if (easeSelector == 5){
+    return easeOutBounce(x);
   }
 }
 
