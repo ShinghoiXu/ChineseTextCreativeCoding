@@ -4,7 +4,7 @@ PShader testShader;
 //int i = 1;
 String[] myTextLines;
 int lineCounter = 0;
-float secPerLine = 1.0f;
+float secPerLine = 0.0f;
 color lineColor;
 int previousSec = 0;
 
@@ -15,11 +15,12 @@ void setup() {
   myTextLines = loadStrings("testText.txt");
   lineColor = randomColorGenHSB();
   previousSec = millis();
-  secPerLine = myTextLines[0].length()*0.34f;
+  secPerLine = myTextLines[0].length()*0.42f;
   t_buffer = createGraphics(width,height,P2D);
   t_buffer.beginDraw();
   t_buffer.textAlign(CENTER,CENTER);
   t_buffer.textFont(font1);
+  t_buffer.colorMode(HSB);
   t_buffer.endDraw();
   drawText();
   r_buffer = createGraphics(t_buffer.width,t_buffer.height,P2D);
@@ -30,7 +31,7 @@ void setup() {
   testShader.set("brightnessHighThreshold",0.8f);
   testShader.set("easeSelector",4);
 
-  frameRate(6);  //delete this for higher frameRate
+  frameRate(10);  //delete this for higher frameRate
 }
 
 void draw() {
@@ -53,21 +54,21 @@ void draw() {
   }
   */
   
-  if ((millis() - previousSec) > (secPerLine * 1000) && (lineCounter+1) < myTextLines.length){
-    lineCounter++;
+  if ((millis() - previousSec) > (secPerLine * 1000) && lineCounter <= myTextLines.length - 1){
     lineColor = randomColorGenHSB();
     drawText();
-    drawText();
     previousSec = millis();
-    secPerLine = max(2.0f,myTextLines[lineCounter].length()*0.34f);
-    if (myTextLines[lineCounter].length()==0) secPerLine = 0.8f;
-    println(secPerLine);
+    secPerLine = max(2.2f,myTextLines[lineCounter].length()*0.42f);
+    if (myTextLines[lineCounter].length()==0) secPerLine = 0.9f;
+    println(lineCounter+" "+secPerLine);
+    lineCounter++;
   }
   
-  //saveFrame("PoemTest-######.jpg");
+  saveFrame("PoemTest-######.jpg");
   //saveFrame("我爱你-######.png");
   //if(frameCount >= 90) exit();
-  if ((lineCounter+1) >= myTextLines.length) exit();
+  if (lineCounter >= myTextLines.length && (millis() - previousSec) > (secPerLine * 1000)) exit();
+
 }
 
 void copyGraphics(PGraphics a, PGraphics b)
@@ -92,11 +93,11 @@ color randomColorGenHSB()
 
 void drawText(){
   t_buffer.beginDraw();
-  t_buffer.colorMode(HSB);
+  t_buffer.clear();
   t_buffer.background(0);
   t_buffer.fill(lineColor);
-
   if (myTextLines[lineCounter].length()!=0) t_buffer.textSize(t_buffer.width/myTextLines[lineCounter].length()*0.8f);
+  t_buffer.text(myTextLines[lineCounter], t_buffer.width/2, t_buffer.height/2);
   t_buffer.text(myTextLines[lineCounter], t_buffer.width/2, t_buffer.height/2);
   t_buffer.endDraw();
 }
