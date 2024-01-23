@@ -26,10 +26,10 @@ void setup() {
   r_buffer = createGraphics(t_buffer.width,t_buffer.height,P2D);
   //testShader = loadShader("Grainy.glsl");  //you can play with another shader as well
   testShader = loadShader("Grainy2.glsl");
-  testShader.set("grainyR",min(t_buffer.height,t_buffer.width)/20);
+  testShader.set("grainyR",min(t_buffer.height,t_buffer.width)/9);
   testShader.set("brightnessLowThreshold",0.1f);
   testShader.set("brightnessHighThreshold",0.8f);
-  testShader.set("easeSelector",4);
+  testShader.set("easeSelector",1);
 
   frameRate(10);  //delete this for higher frameRate
 }
@@ -55,16 +55,18 @@ void draw() {
   */
   
   if ((millis() - previousSec) > (secPerLine * 1000) && lineCounter <= myTextLines.length - 1){
-    lineColor = randomColorGenHSB();
-    drawText();
-    previousSec = millis();
-    secPerLine = max(2.2f,myTextLines[lineCounter].length()*0.42f);
-    if (myTextLines[lineCounter].length()==0) secPerLine = 0.9f;
-    println(lineCounter+" "+secPerLine);
+    if(lineCounter!=0){
+      lineColor = randomColorGenHSB();
+      drawText();
+      previousSec = millis();
+      secPerLine = max(2.2f,myTextLines[lineCounter].length()*0.42f);
+      if (myTextLines[lineCounter].length()==0) secPerLine = 0.9f;
+      println(lineCounter+" "+secPerLine);
+    }
     lineCounter++;
   }
   
-  saveFrame("PoemTest-######.jpg");
+  if (frameCount != 1) saveFrame("PoemTest-######.jpg");
   //saveFrame("我爱你-######.png");
   //if(frameCount >= 90) exit();
   if (lineCounter >= myTextLines.length && (millis() - previousSec) > (secPerLine * 1000)) exit();

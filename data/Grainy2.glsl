@@ -13,7 +13,6 @@ uniform int grainyR;
 uniform float brightnessLowThreshold;
 uniform float brightnessHighThreshold;
 uniform int easeSelector;
-float mixFactor = 1.0f;
 
 varying vec4 vertColor;
 varying vec4 vertTexCoord;
@@ -94,6 +93,7 @@ void main(void) {
   vec4 orig = vec4(texture2D(texture, vertTexCoord.st).rgb,1);    //sampling
   int dotCount = 0;
   vec4 grainyLayer = vec4(0.0,0.0,0.0,0.0);
+  float transparentFactor = 2500.0f/(3.1415*grainyR*grainyR);
 
   for (int i = -grainyR; i <= grainyR; i++) {
     for (int j = -grainyR; j <= grainyR; j++){
@@ -115,8 +115,11 @@ void main(void) {
     }
   }
   
-  if (dotCount!=0) grainyLayer /= dotCount;
+  if (dotCount!=0) {
+    grainyLayer /= dotCount;
+    grainyLayer = vec4(grainyLayer.xyz,dotCount*transparentFactor);
+  }
     else grainyLayer = orig;
-  orig = mix(orig,grainyLayer,mixFactor);
-  gl_FragColor = vec4(orig.rgb,1.0) * vertColor;  
+  orig = grainyLayer;
+  gl_FragColor = orig * vertColor;  
 }
